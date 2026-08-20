@@ -1,0 +1,22 @@
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pyinstaller
+      - run: pyinstaller --noconfirm --clean --onefile --windowed --name AnkiRead anki_read_gui.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AnkiRead-windows-x64
+          path: dist/AnkiRead.exe
+

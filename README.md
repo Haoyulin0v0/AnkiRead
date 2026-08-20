@@ -82,7 +82,7 @@ python .\anki_today.py .\collection.colpkg
 
 导出的 collection 包含完整卡片内容，请不要把它上传到公开仓库。
 
-## AnkiRead.exe
+## AnkiRead.exe 图形界面
 
 使用 PyInstaller 打包后，可以直接运行 Windows 程序：
 
@@ -94,5 +94,13 @@ python .\anki_today.py .\collection.colpkg
 
 ```powershell
 .\AnkiRead.exe --anki-path "D:\Apps\Anki\anki.exe" --days 5
+```
+
+打开 `AnkiRead.exe` 不带参数即可使用图形界面。界面支持填写统计天数、Anki 配置、牌组、等待同步时间、Anki 路径和输出文件。牌组留空时输出所有牌组。
+
+开发环境重新打包命令：
+
+```powershell
+pyinstaller --noconfirm --clean --onefile --windowed --name AnkiRead .\anki_read_gui.py
 ```
 

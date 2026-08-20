@@ -2,8 +2,6 @@
 
 一个面向 Windows 的 Anki 学习记录工具：手机完成 Anki 学习并同步到 AnkiWeb 后，电脑端 Anki 自动同步，AnkiRead 读取桌面 Anki 的本地数据库，生成最近几天的学习与复习词汇 Markdown 报告。
 
-AnkiRead 不需要 AnkiConnect，也不需要导出 `.apkg` 或 `.colpkg` 文件。
-
 ## 功能
 
 - 自动查找并启动 `anki.exe`；
@@ -13,10 +11,10 @@ AnkiRead 不需要 AnkiConnect，也不需要导出 `.apkg` 或 `.colpkg` 文件
 - 支持最近任意天数，例如 1 天、5 天或 30 天；
 - 可按 Anki 配置和牌组筛选；
 - 输出正面、背面、标签、评分、间隔和复习耗时；
-- 生成 `today.md` 或 `last_5_days.md` 等 Markdown 文件；
+- 生成等报告md文件；
 - 提供图形界面和命令行两种使用方式。
 
-## 推荐使用方式：图形界面
+## 图形界面
 
 从仓库的 [Releases](https://github.com/Haoyulin0v0/AnkiRead/releases) 下载 `AnkiRead.exe`，双击打开。
 
@@ -127,12 +125,4 @@ pyinstaller --noconfirm --clean --onefile --windowed --name AnkiRead .\anki_read
 ```
 
 GitHub Actions 也会自动构建 Windows 程序。可以在仓库的 Actions 页面运行发布流程，生成带有 `AnkiRead.exe` 的 Release。
-
-## 隐私
-
-AnkiRead 只读取本机桌面 Anki 数据库，不上传卡片内容。请不要把 `today.md`、`last_5_days.md`、Anki 数据库或导出包提交到公开仓库；这些文件可能包含个人学习内容。
-
-## 名称说明
-
-`AnkiRead` 目前可以继续使用：短、容易记，也能表达“读取 Anki 数据”。如果未来希望更准确地突出“学习报告”，可以考虑 `AnkiStudyLog` 或 `AnkiReviewReport`。但当前不建议改仓库名，因为改名会影响已有 Release、下载链接和用户本地配置。
 

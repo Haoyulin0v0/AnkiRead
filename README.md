@@ -46,7 +46,7 @@ AnkiRead 不需要 AnkiConnect，也不需要导出 `.apkg` 或 `.colpkg` 文件
         ↓
 桌面 Anki 自动同步
         ↓
-AnkiRead 关闭 Anki并读取数据库
+AnkiRead 关闭 Anki 并读取数据库
         ↓
 生成 Markdown 报告
 ```

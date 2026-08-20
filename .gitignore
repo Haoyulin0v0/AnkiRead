@@ -1,0 +1,12 @@
+today.md
+last_5_days.md
+*.anki2
+*.anki21
+*.colpkg
+*.apkg
+__pycache__/
+build/
+dist/
+release/
+*.spec
+

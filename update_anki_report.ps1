@@ -9,6 +9,19 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptRoot
 $startedByScript = $false
 
+# If Anki's window is already gone but a stale hidden process remains, clean up
+# only that hidden process. A visible Anki window is never terminated here.
+$existingAnki = Get-Process -Name "anki" -ErrorAction SilentlyContinue
+if ($existingAnki) {
+    $visibleAnki = $existingAnki | Where-Object { $_.MainWindowHandle -ne 0 }
+    if ($visibleAnki) {
+        Write-Error "Anki is already running with a visible window. Close it and run this script again."
+        exit 2
+    }
+    $existingAnki | Stop-Process -Force
+    Start-Sleep -Seconds 2
+}
+
 # Anki handles sync on profile open; this script waits and reads the local collection.
 $anki = Get-Process -Name "anki" -ErrorAction SilentlyContinue
 if (-not $anki) {
@@ -26,7 +39,7 @@ if (-not $anki) {
     }
     if ($ankiExe) {
         $ankiFilePath = if ($ankiExe.FullName) { $ankiExe.FullName } else { $ankiExe.Source }
-        Start-Process -FilePath $ankiFilePath
+        $startedAnki = Start-Process -FilePath $ankiFilePath -PassThru
         $startedByScript = $true
     } else {
         Write-Error "anki.exe was not found. Open Anki first, or provide -AnkiPath."
@@ -38,12 +51,13 @@ Start-Sleep -Seconds $WaitSeconds
 
 if ($startedByScript) {
     # Close gracefully so Anki releases collection.anki2/collection.anki21.
-    $anki = Get-Process -Name "anki" -ErrorAction SilentlyContinue
-    if ($anki) {
-        $anki.CloseMainWindow() | Out-Null
-        if (-not $anki.WaitForExit(120000)) {
-            Write-Error "Anki did not exit after 120 seconds; collection is still locked."
-            exit 2
+    if ($startedAnki) {
+        $startedAnki.Refresh()
+        $startedAnki.CloseMainWindow() | Out-Null
+        if (-not $startedAnki.WaitForExit(120000)) {
+            Write-Warning "Anki did not exit normally; stopping only the process started by this script."
+            Stop-Process -Id $startedAnki.Id -Force
+            $startedAnki.WaitForExit(30000)
         }
     }
 } else {

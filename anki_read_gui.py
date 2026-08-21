@@ -69,15 +69,15 @@ class AnkiReadWindow:
     def worker(self, days: int, wait: int):
         try:
             self.set_status("检查 Anki 进程……")
-            tasklist = subprocess.run(["tasklist", "/FI", "IMAGENAME eq anki.exe"], capture_output=True, text=True)
-            if "anki.exe" in tasklist.stdout.lower():
-                raise RuntimeError("Anki 已经在运行，请先关闭 Anki 后再点击按钮。")
+            cleanup = "$p=Get-Process -Name anki -ErrorAction SilentlyContinue; if ($p) { $v=$p | Where-Object { $_.MainWindowHandle -ne 0 }; if ($v) { exit 2 }; $p | Stop-Process -Force; Start-Sleep -Seconds 2 }"
+            if subprocess.run(["powershell", "-NoProfile", "-Command", cleanup]).returncode != 0:
+                raise RuntimeError("Anki 正在运行，请先关闭 Anki 后再点击按钮。")
             anki = find_anki(self.anki_path.get().strip() or None)
             process = subprocess.Popen([str(anki)])
             self.set_status(f"已启动 Anki，等待 {wait} 秒同步……")
             import time
             time.sleep(wait)
-            close_script = "$p=Get-Process -Id %d -ErrorAction SilentlyContinue; if ($p) { $p.CloseMainWindow() | Out-Null; if (-not $p.WaitForExit(120000)) { exit 2 } }" % process.pid
+            close_script = "$p=Get-Process -Id %d -ErrorAction SilentlyContinue; if ($p) { $p.CloseMainWindow() | Out-Null; if (-not $p.WaitForExit(120000)) { Stop-Process -Id $p.Id -Force; $p.WaitForExit(30000) } }" % process.pid
             if subprocess.run(["powershell", "-NoProfile", "-Command", close_script]).returncode != 0:
                 raise RuntimeError("Anki 未能正常关闭，数据库可能仍被占用。")
             source = local_collection(self.profile.get().strip() or None)

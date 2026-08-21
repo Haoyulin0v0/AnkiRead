@@ -49,7 +49,7 @@ def main() -> int:
     print(f"已启动 Anki：{anki_path}")
     print(f"等待 {args.wait_seconds} 秒，让 Anki 自动同步……")
     time.sleep(args.wait_seconds)
-    close_script = "$p=Get-Process -Id %d -ErrorAction SilentlyContinue; if ($p) { $p.CloseMainWindow() | Out-Null; if (-not $p.WaitForExit(120000)) { exit 2 } }" % process.pid
+    close_script = "$p=Get-Process -Id %d -ErrorAction SilentlyContinue; if ($p) { $p.CloseMainWindow() | Out-Null; if (-not $p.WaitForExit(120000)) { Stop-Process -Id $p.Id -Force; $p.WaitForExit(30000) } }" % process.pid
     close_result = subprocess.run(["powershell", "-NoProfile", "-Command", close_script])
     if close_result.returncode != 0:
         raise RuntimeError("Anki 未能正常关闭，数据库仍可能被占用。")
